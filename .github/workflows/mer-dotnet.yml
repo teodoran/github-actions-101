@@ -24,4 +24,12 @@ jobs:
         run: dotnet build $Notes_Api_Test
 
       - name: "Run Tests"
-        run: dotnet test $Notes_Api_Test
+        run: dotnet test --logger trx $Notes_Api_Test
+
+      - name: "Report Tests"
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: test-results           # Name of the check run which will be created
+          path: Notes.Api.Test/TestResults/*.trx    # Path to test results
+          reporter: dotnet-trx        # Format of test results
