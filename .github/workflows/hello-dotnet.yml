@@ -18,10 +18,28 @@ jobs:
           dotnet-version: "6.0.x"
 
       - name: "Restore Tests"
-        run: "dotnet restore $Notes_Api_Test"
+        run: dotnet restore $Notes_Api_Test
 
       - name: "Build Tests"
-        run: "dotnet build --no-restore --configuration Release $Notes_Api_Test"
+        run: >
+          dotnet build
+            --no-restore
+            --configuration Release
+            $Notes_Api_Test
 
       - name: "Run Tests"
-        run: "dotnet test --no-build --configuration Release --verbosity normal $Notes_Api_Test"
+        run: >
+          dotnet test
+            --no-build
+            --configuration Release
+            --verbosity normal
+            --logger trx
+            $Notes_Api_Test
+
+      - name: "Report Tests"
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: xUnit Tests
+          path: Notes.Api.Test/TestResults/*.trx
+          reporter: dotnet-trx

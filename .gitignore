@@ -5,6 +5,9 @@ obj/
 # .NET development settings
 appsettings.*.json
 
+# .NET test results
+TestResults/
+
 # VS Code user settings
 .vscode
 
