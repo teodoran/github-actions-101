@@ -24,4 +24,4 @@ jobs:
         run: "dotnet build --no-restore --configuration Release $Notes_Api_Test"
 
       - name: "Run Tests"
-        run: "dotnet test --no-build --verbosity normal $Notes_Api_Test"
+        run: "dotnet test --no-build --configuration Release --verbosity normal $Notes_Api_Test"
