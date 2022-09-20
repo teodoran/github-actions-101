@@ -1,0 +1,21 @@
+name: "Mer Hello .NET!"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    env:
+      Notes_Api_Test: "Notes.Api.Test/Notes.Api.Test.csproj"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: "Setup .NET Core SDK"
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: "Restore Tests"
+        run: dotnet restore Notes.Api.Test/Notes.Api.Test.csproj
