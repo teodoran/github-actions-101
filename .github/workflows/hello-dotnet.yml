@@ -36,6 +36,6 @@ jobs:
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: xUnit Tests
+          name: test-report
           path: Notes.Api.Test/TestResults/*.trx
           reporter: dotnet-trx
