@@ -1,0 +1,28 @@
+name: "Hello .NET!"
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    env:
+      Notes_Api_Test: "Notes.Api.Test/Notes.Api.Test.csproj"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: "Setup .NET Core SDK"
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: "6.0.x"
+
+      - name: "Restore Tests"
+        run: "dotnet restore $Notes_Api_Test"
+
+      - name: "Build Tests"
+        run: "dotnet build --configuration Release --no-restore $Notes_Api_Test"
+
+      - name: "Run Tests"
+        run: "dotnet test --no-restore --verbosity normal $Notes_Api_Test"
