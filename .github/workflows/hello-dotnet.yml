@@ -21,19 +21,15 @@ jobs:
         run: dotnet restore $Notes_Api_Test
 
       - name: "Build Tests"
-        run: >-
-          dotnet build
-            --no-restore
-            --configuration Release
-            $Notes_Api_Test
+        run: dotnet build --no-restore --configuration Release $Notes_Api_Test
 
       - name: "Run Tests"
-        run: >-
-          dotnet test
-            --no-build
-            --configuration Release
-            --verbosity normal
-            --logger trx
+        run: |
+          dotnet test \
+            --no-build \
+            --configuration Release \
+            --verbosity normal \
+            --logger trx \
             $Notes_Api_Test
 
       - name: "Report Tests"
