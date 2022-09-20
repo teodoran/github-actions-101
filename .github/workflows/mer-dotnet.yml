@@ -24,4 +24,4 @@ jobs:
         run: dotnet build $Notes_Api_Test
 
       - name: "Run Tests"
-        run: dotnet run $Notes_Api_Test
+        run: dotnet test $Notes_Api_Test
