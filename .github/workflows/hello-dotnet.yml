@@ -2,7 +2,6 @@ name: "Hello .NET!"
 
 on:
   workflow_dispatch:
-  push:
 
 jobs:
   build-test:
@@ -22,7 +21,7 @@ jobs:
         run: "dotnet restore $Notes_Api_Test"
 
       - name: "Build Tests"
-        run: "dotnet build --configuration Release --no-restore $Notes_Api_Test"
+        run: "dotnet build --no-restore --configuration Release $Notes_Api_Test"
 
       - name: "Run Tests"
-        run: "dotnet test --no-restore --verbosity normal $Notes_Api_Test"
+        run: "dotnet test --no-build --verbosity normal $Notes_Api_Test"
