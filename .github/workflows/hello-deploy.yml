@@ -61,7 +61,12 @@ jobs:
         run: dotnet build --no-restore --configuration Release $Notes_Api
 
       - name: "Publish Application"
-        run: dotnet publish --no-build --configuration Release --output ${{env.DOTNET_ROOT}}/published
+        run: |
+          dotnet publish \
+            --no-build \
+            --configuration Release \
+            --output ${{env.DOTNET_ROOT}}/published \
+            $Notes_Api
 
       - name: "Upload Application Artifacts"
         uses: actions/upload-artifact@v2
