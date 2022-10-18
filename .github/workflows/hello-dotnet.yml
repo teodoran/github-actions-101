@@ -1,4 +1,4 @@
-name: "Hello .NET!"
+name: "Hello .NET"
 
 on:
   workflow_dispatch:
