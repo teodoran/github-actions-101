@@ -26,7 +26,7 @@ jobs:
           context: .
           file: ./Notes.Api/Dockerfile
           push: true
-          tags: devops101registry.azurecr.io/notes-api:${{ github.run_number }}
+          tags: devops101registry.azurecr.io/notes-api:v${{ github.run_number }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -46,4 +46,4 @@ jobs:
       - uses: Azure/k8s-deploy@v3.1
         with:
           manifests: Notes.Api/Kubernetes.yaml
-          images: devops101registry.azurecr.io/notes-api:${{ github.run_number }}
+          images: devops101registry.azurecr.io/notes-api:v${{ github.run_number }}
