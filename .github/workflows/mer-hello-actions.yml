@@ -1,0 +1,11 @@
+name: "Mer Actions som sier Hello!"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Echo Greeting"
+        run: "echo 'Hei på deg GitHub Actions!'"
