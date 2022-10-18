@@ -14,6 +14,8 @@ Før du kan kjøre applikasjonen lokalt, trenger du å installere [.NET 6.0 SDK]
 
 For å klone koden, trenger du [Git](https://git-scm.com/downloads). I tillegg trenger du en konto på [GitHub](https://github.com/join) for å kunne bruke [Actions](https://docs.github.com/en/actions/learn-github-actions).
 
+Når vi kommer så langt i kurset at man skal begynne å installere applikasjonen i forskjellige miljøer, trenger du [Docker](https://docs.docker.com/get-docker/) eller [Podman](https://podman.io/getting-started/installation) for å bygge kontainere, og [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) for å orkestrere kontainerene du bygger i Kubernetes.
+
 🐙 Kort om CI/CD
 ----------------
 For at applikasjonene vi lager skal kunne brukes av noen andre enn oss, må vi typisk få de ut et eller annet sted hvor noen andre enn oss kan bruke de. Dette andre stedet kaller vi gjerne produksjon, og på veien ut kan det skje mye rart.
@@ -77,3 +79,89 @@ Nå skal vi ta ibruk GitHub Actions til å lage en enkel CI/CD-pipeline som bygg
 ![](Images/masse-fra-utvikler-til-produksjon.png)
 
 _Herfra blir det code-along med workshop-verten._
+
+Notater
+-------
+
+### Vi setter opp AKS
+Hente nøkler for å koble på klusteret `devops-101-cluster` (krever at man har både kubectl og Azure CLI installert):
+
+Forteller Azure CLI hvilken subscription man skal jobbe med.
+```shell
+$> az login
+$> az account set --subscription 3a72c7bc-dae2-4dd1-8fed-89110003b86a
+```
+
+Forteller Azure CLI at man skal hente ned nøkler til kubectl for klusteret `devops-101-cluster`.
+```shell
+$> az aks get-credentials --resource-group tae-devops-101-workshop --name devops-101-cluster
+```
+
+Noen ting man skal kunne gjøre når dette er på plass:
+```shell
+# List all deployments in all namespaces
+$> kubectl get deployments --all-namespaces=true
+
+# List all deployments in a specific namespace
+# Format :kubectl get deployments --namespace <namespace-name>
+$> kubectl get deployments --namespace kube-system
+
+# List details about a specific deployment
+# Format :kubectl describe deployment <deployment-name> --namespace <namespace-name>
+$> kubectl describe deployment my-dep --namespace kube-system
+
+# List pods using a specific label
+# Format :kubectl get pods -l <label-key>=<label-value> --all-namespaces=true
+$> kubectl get pods -l app=nginx --all-namespaces=true
+
+# Get logs for all pods with a specific label
+# Format :kubectl logs -l <label-key>=<label-value>
+$> kubectl logs -l app=nginx --namespace kube-system
+```
+
+Nyttige lenker:
+- [kubectl overview](https://kubernetes.io/docs/reference/kubectl/)
+- [kubectl getting started guide](https://kubernetes.io/docs/setup/)
+- [kubectl cheat sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
+- [kubectl reference](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands)
+
+### Vi setter opp ACR
+Registry heter `devops101registry.azurecr.io`.
+
+[Denne guiden](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal?tabs=azure-cli#log-in-to-registry) er fin.
+
+#### Vi kobler sammen ACR og AKS
+Her er det greit å se på [denne guiden](https://learn.microsoft.com/en-us/azure/aks/cluster-container-registry-integration?tabs=azure-cli).
+
+Kommandoen under fungerer ikke fordi man ikke er owner av subscription ressursen er satt opp i. Får prøve å gjøre det manuelt når den tid kommer.
+```shell
+$> az aks update -n devops-101-cluster -g tae-devops-101-workshop --attach-acr devops101registry
+```
+
+```shell
+$> kubectl create secret docker-registry devops101registry-credentials --docker-server=devops101registry.azurecr.io --docker-username=devops101registry --docker-password={replace with password} --docker-email=Teodor.Ande.Elstad@nrk.no
+```
+
+### Vi bygger en Docker-kontainer
+```shell
+$> docker build -f Notes.Api/Dockerfile -t devops101registry.azurecr.io/notes-api:0.0.1 ./
+```
+
+```shell
+$> docker run -it -p 8000:80 notes-api:0.0.1
+```
+
+### Vi pusher image til ACR
+
+```shell
+$> docker login devops101registry.azurecr.io
+```
+
+```shell
+$> docker push devops101registry.azurecr.io/notes-api:0.0.1
+```
+
+### Vi kjører opp Notes.Api på Kubernetes
+```shell
+$> kubectl apply -f Notes.Api/Kubernetes.yaml
+```
